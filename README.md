@@ -8,7 +8,7 @@ A script written in Go, which goal is to make your GitHub contributions graph th
 ```sh
 go run . random -repository="https://github.com/yourUserName/yourRepo.git"
 ```
-Because it has to commit for each day of the year, this can take a few minutes to complete.
+Because it has to commit for each day of the year, this can take a few minutes to complete. <br />
 Note: After the script finishes, you have to wait for GitHub to register and show the changes.
 
 ## Paremeters
