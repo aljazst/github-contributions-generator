@@ -1,8 +1,9 @@
-# github-contributions-generator
-A Go script that makes your GitHub contribution activity panel look awesome!
+# GitHub contributions generator
+
+A script written in Go, which goal is to make your GitHub contributions graph the way you want it to be.
 
 
-## Proxy Config
+## Paremeters
 | Flag Name        | Type    | Required | Default                                        | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
 |-------------------|---------|----------|------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | repository        | String  | true     |                                       | Enter a link to an empty non-initialized GitHub repository to which you want to push the generated file. The link can be an SSH (assuming you have an ssh key) or the HTTPS format. (e.g., git@github.com:yourusername/yourrepo.git or https://github.com/yourusername/yourrepo.git)                                                                                                                                                                                                                                                                                                                                                                                                                                     |
