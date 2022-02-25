@@ -117,7 +117,7 @@ func contributins_specific_months(specified_months string) [2]int {
             months[0] = startMonth - int(currentMonth) //if we want to commit on specific months we have to subtract the month we are currently in.
         }
         
-        months[1] = getNumberOfDaysBetweenMonths(months[0], endMonth)
+        months[1] = getNumberOfDaysBetweenMonths(startMonth, endMonth  + 1)
         fmt.Println("Number of days with possible commits:", months[1]) 
         }
     } else {
