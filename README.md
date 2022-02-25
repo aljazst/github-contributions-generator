@@ -19,6 +19,14 @@ Note: After the script finishes, you have to wait for GitHub to register and sho
 
 Note: The default maximum value of commits in the example above was 7 per day. The script made a contribution 85% of days in a year.
 
+If you want your graph to look like you've made a lot of contributions in a specific month, you can do it like this:
+```sh
+go run . random -repository="https://github.com/yourUserName/yourRepo.git" -month=3-4 -frequency=96 -commit_limit=15
+```
+
+![graphh specific month 3-4](https://user-images.githubusercontent.com/76880102/155750671-3ec85410-9537-41ce-b100-7a49c437b0c3.PNG)
+Lets say the current date is 25th of february. The command above will start making contributions from the 25 of march for 61 days (because the we specified -month=3-4 from march-april). And because we are nearly at the end of march the cript will continue past april, untill it commits the sum of days the entered months have.
+
 ## Paremeters
 | Flag Name        | Type    | Required | Default                                        | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
 |-------------------|---------|----------|------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
