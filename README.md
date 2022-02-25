@@ -2,6 +2,14 @@
 
 A script written in Go, which goal is to make your GitHub contributions graph the way you want it to be.
 
+## How to run the random option
+1. Create an fully empty GitHub repository (not even a README). Do not initialize it.
+2. For the basic option (contribute the entire year), you run the command:
+```sh
+go run . random -repository="https://github.com/yourUserName/yourRepo.git"
+```
+Because it has to commit for each day of the year, this can take a few minutes to complete.
+Note: After the script finishes, you have to wait for GitHub to register and show the changes.
 
 ## Paremeters
 | Flag Name        | Type    | Required | Default                                        | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
