@@ -16,6 +16,9 @@ import (
 const FILE_NAME string = "data.txt"
 const DATE_FORMAT string = "2006-01-02 15:04:05"
 
+const ROWS int = 7
+const COLUMNS int = 5
+
 func writeErrorMessage(err error) {
     if err != nil {
         log.Println("There has been an error: ",err)
@@ -140,9 +143,9 @@ func contributins_specific_months(specified_months string) [2]int {
 
 func runScript(repository, timePeriod string, commit_limit, frequency int) {
 
-    out := os.MkdirAll("contributions", os.ModeDir)
+    out := os.MkdirAll("randomContributions", os.ModeDir)
 
-    of := os.Chdir("contributions")
+    of := os.Chdir("randomContributions")
     os.RemoveAll(".git")
     os.RemoveAll("data.txt")
     exec.Command("git", "init").Run()
@@ -157,21 +160,102 @@ func runScript(repository, timePeriod string, commit_limit, frequency int) {
         fmt.Println("Holdup. You just wanted to run a github contrubutins script without entering a github repo? Try again.")
     }
     
+    //TODO: error handling of the git commands -> https://pkg.go.dev/os/exec#Command
     exec.Command("git", "branch", "-M", "main").Run()
     exec.Command("git", "remote","add", "origin", repository).Run()
 
     exec.Command("git", "push", "-u", "origin", "main").Run()
 
-    fmt.Println("done")
+    fmt.Println("Done!")
 
     if out == nil  {
-        fmt.Println("Command Successfully Executed")
+        fmt.Println("Os command Successfully Executed")
         
     } else {
         fmt.Printf("%s", out)
     }
 }
 
+var bMatrix = [][]int{   {0,1,0,0,0}, 
+{0,1,0,0,0}, 
+{0,1,1,1,0},
+{0,1,0,0,1}, 
+{0,1,0,0,1}, 
+{0,1,1,1,0}, 
+{0,0,0,0,0}}
+
+func runNonRandomScript(message string) {
+    os.MkdirAll("nonrandomContributions", os.ModeDir)
+
+    of := os.Chdir("nonrandomContributions")
+    os.RemoveAll(".git")
+    os.RemoveAll("data.txt")
+    exec.Command("git", "init").Run()
+
+    if of != nil {
+        log.Fatal(of)
+    }
+
+   // i := 0
+   // j := 0
+   //TODO flag to enter what date is in the corner!
+    counter := -1
+    var date string
+    currentTime := time.Now()
+    fmt.Println("here")
+    for i := 0; i < COLUMNS; i++ {
+        for j := 0; j < ROWS; j++ {
+            fmt.Println("here1")
+            if bMatrix[j][i] == 1{
+                 date = currentTime.AddDate(-1, 0, counter).Format(DATE_FORMAT)
+                           
+                 contributeTmp(date)
+                }       
+            counter++
+            fmt.Println("conunter: ", counter)
+
+            if counter >= 35 {
+                // reset the variables to 0 
+                //bMatrix = assignMatrix(message)
+            }
+
+        }
+    }
+
+
+}
+
+func assignMatrix(message string) [][]int {
+
+    var charOfAlphabet = make([][]int, 2)
+
+    for i := 0; i < len(message); i++ {
+
+   // make a map of alphabeet so you can search for the letter
+    charOfAlphabet = bMatrix
+    }
+
+    return charOfAlphabet
+}
+
+func contributeTmp (date string) {
+
+    file, err := os.OpenFile(FILE_NAME, os.O_APPEND|os.O_RDWR|os.O_CREATE, 0644)
+    if err != nil {
+        log.Println("OpenFile err: ",err)
+        return
+    }
+    defer file.Close()
+
+    _, err2 := file.WriteString(date+"\n\n")
+
+    if err2 != nil {
+        log.Fatal("WriteString err: ", err2)
+    }
+    //https://pkg.go.dev/os#File.Sync just in case we flush.
+    file.Sync()
+
+}
 
 func main() {
 
@@ -184,7 +268,7 @@ func main() {
 
 
     nonrandomFlag := flag.NewFlagSet("nonrandom", flag.ExitOnError)
-    barLevel := nonrandomFlag.Int("level", 0, "level")
+    message := nonrandomFlag.String("message", "hello", "Enter the message you would like to be displayed on the contribution graph. The maximum ammount of characters is 10.")
 
     if len(os.Args) < 2 {
         fmt.Println("expected 'foo' or 'bar' subcommands")
@@ -206,8 +290,10 @@ func main() {
     case "nonrandom":
         nonrandomFlag.Parse(os.Args[2:])
         fmt.Println("subcommand 'bar'")
-        fmt.Println("  level:", *barLevel)
+        fmt.Println("  message:", *message)
         fmt.Println("  tail:", nonrandomFlag.Args())
+        runNonRandomScript(*message)
+
     default:
         fmt.Println("Expected 'random' or 'nonrandom' subcommands!\n")
         fmt.Println("Arguments for random flag: \n")
