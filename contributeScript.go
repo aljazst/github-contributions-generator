@@ -11,6 +11,7 @@ import (
     "math/rand"
     "math"
     "os/exec"
+
 )
 
 const FILE_NAME string = "data.txt"
@@ -184,42 +185,65 @@ var bMatrix = [][]int{   {0,1,0,0,0},
 {0,1,1,1,0}, 
 {0,0,0,0,0}}
 
-func runNonRandomScript(message string) {
-    os.MkdirAll("nonrandomContributions", os.ModeDir)
+var letterMatrix [][]int 
+var number int = 0
+var iterationCounter int = 0
+var lol9 int = 0
+func runNonRandomScript(message string, dayCounter int) {
+   /* os.MkdirAll("nonrandomContributions", os.ModeDir)
 
     of := os.Chdir("nonrandomContributions")
     os.RemoveAll(".git")
     os.RemoveAll("data.txt")
     exec.Command("git", "init").Run()
 
+    
     if of != nil {
         log.Fatal(of)
-    }
-
-   // i := 0
-   // j := 0
+    }*/
+    message = "///abcd"
+    number++
+    messageLength := len(message)
+    fmt.Print("Message length ",messageLength)
+    fmt.Print("Message  ",message)
    //TODO flag to enter what date is in the corner!
-    counter := -1
+    //dayCounter := -1
+    
     var date string
     currentTime := time.Now()
-    fmt.Println("here")
+    if iterationCounter < 1 {
+        letterMatrix = ReturnMatrix(message)
+    }
     for i := 0; i < COLUMNS; i++ {
         for j := 0; j < ROWS; j++ {
-            fmt.Println("here1")
-            if bMatrix[j][i] == 1{
-                 date = currentTime.AddDate(-1, 0, counter).Format(DATE_FORMAT)
+            //fmt.Println("inside loop")
+            if letterMatrix[j][i] == 1{
+                 date = currentTime.AddDate(-1, 0, dayCounter).Format(DATE_FORMAT)
                            
                  contributeTmp(date)
-                }       
-            counter++
-            fmt.Println("conunter: ", counter)
-
-            if counter >= 35 {
-                // reset the variables to 0 
-                //bMatrix = assignMatrix(message)
-            }
+                }   
+                
+            //fmt.Print(letterMatrix)
+            dayCounter++
+            iterationCounter++
+            fmt.Println("interations: ", iterationCounter)
 
         }
+    }
+    fmt.Print("lette: ", message[1:])
+    lol9++
+    if iterationCounter <= 300 {
+        // reset the variables to 0 
+        fmt.Println("sisdsds")
+        letterMatrix = ReturnMatrix(message[lol9:])
+        fmt.Print(letterMatrix)
+        if number != iterationCounter {
+       // runNonRandomScript(message[1:], dayCounter)
+        }
+        
+        //bMatrix = assignMatrix(message)
+        //recursive, call this function again
+
     }
 
 
@@ -292,7 +316,15 @@ func main() {
         fmt.Println("subcommand 'bar'")
         fmt.Println("  message:", *message)
         fmt.Println("  tail:", nonrandomFlag.Args())
-        runNonRandomScript(*message)
+
+        os.MkdirAll("nonrandomContributions", os.ModeDir)
+
+         os.Chdir("nonrandomContributions")
+        os.RemoveAll(".git")
+        os.RemoveAll("data.txt")
+        exec.Command("git", "init").Run()
+
+        runNonRandomScript(*message, -1)
 
     default:
         fmt.Println("Expected 'random' or 'nonrandom' subcommands!\n")
