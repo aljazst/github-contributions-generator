@@ -142,62 +142,62 @@ func contributins_specific_months(specified_months string) [2]int {
     return months
 }
 
-func runScript(repository, timePeriod string, commit_limit, frequency int) {
+func runScript(repository, timePeriod string, commit_limit, frequency int, message string, dayCounter int, isRandom bool) {
 
-    out := os.MkdirAll("randomContributions", os.ModeDir)
+    // TODO: error handling of the os commands
+    if isRandom {
+        os.MkdirAll("randomContributions", os.ModeDir)
 
-    of := os.Chdir("randomContributions")
-    os.RemoveAll(".git")
-    os.RemoveAll("data.txt")
-    exec.Command("git", "init").Run()
+        os.Chdir("randomContributions")
+        os.RemoveAll(".git")
+        os.RemoveAll("data.txt")
+        exec.Command("git", "init").Run()
+    
+    } else {
 
-    if of != nil {
-        log.Fatal(of)
+       os.MkdirAll("nonrandomContributions", os.ModeDir)
+
+       os.Chdir("nonrandomContributions")
+       os.RemoveAll(".git")
+       os.RemoveAll("data.txt")
+       exec.Command("git", "init").Run()
     }
 
+
     if repository != ""{
-        generateDate(contributionsPerDay(commit_limit), frequency, contributins_specific_months(timePeriod))
+        if isRandom {
+            generateDate(contributionsPerDay(commit_limit), frequency, contributins_specific_months(timePeriod))
+        } else {
+            runNonRandomScript(message, dayCounter)
+        }
+
+        //TODO: error handling of the git commands -> https://pkg.go.dev/os/exec#Command
+        exec.Command("git", "branch", "-M", "main").Run()
+        exec.Command("git", "remote","add", "origin", repository).Run()
+
+        exec.Command("git", "push", "-u", "origin", "main").Run()
+
     } else {
         fmt.Println("Holdup. You just wanted to run a github contrubutins script without entering a github repo? Try again.")
     }
     
-    //TODO: error handling of the git commands -> https://pkg.go.dev/os/exec#Command
-    exec.Command("git", "branch", "-M", "main").Run()
-    exec.Command("git", "remote","add", "origin", repository).Run()
 
-    exec.Command("git", "push", "-u", "origin", "main").Run()
 
-    fmt.Println("Done!")
+    fmt.Println("I'm done in general!")
+    
 
-    if out == nil  {
-        fmt.Println("Os command Successfully Executed")
-        
-    } else {
-        fmt.Printf("%s", out)
-    }
+
 }
 
-var bMatrix = [][]int{   {0,1,0,0,0}, 
-{0,1,0,0,0}, 
-{0,1,1,1,0},
-{0,1,0,0,1}, 
-{0,1,0,0,1}, 
-{0,1,1,1,0}, 
-{0,0,0,0,0}}
 
 var letterMatrix [][]int 
 var number int = 0
 var iterationCounter int = 0
 var letterCounter int = 0
 var enteredMessage string 
-func runNonRandomScript(message, repository string, dayCounter int) {
-   /* os.MkdirAll("nonrandomContributions", os.ModeDir)
 
-    of := os.Chdir("nonrandomContributions")
-    os.RemoveAll(".git")
-    os.RemoveAll("data.txt")
-    exec.Command("git", "init").Run()
-    */
+func runNonRandomScript(message string, dayCounter int) {
+
 
     //now this is an ugly hack. Because the flag returns a pointer of the message the slice operations in this function change the value of the message. So we save the original value of the message and use it.
     if letterCounter == 0 {
@@ -206,10 +206,8 @@ func runNonRandomScript(message, repository string, dayCounter int) {
     
     number++
     messageLength := len(enteredMessage)
-    fmt.Println("Message length ",messageLength)
-    fmt.Println("Message is: ",enteredMessage)
-   //TODO flag to enter what date is in the corner!
-    //dayCounter := -1
+    fmt.Println("Message length: ",messageLength)
+    fmt.Println("Message is: ", enteredMessage)
     
     var date string
     currentTime := time.Now()
@@ -221,47 +219,43 @@ func runNonRandomScript(message, repository string, dayCounter int) {
             //fmt.Println("inside loop")
             if letterMatrix[j][i] == 1{
                  date = currentTime.AddDate(-1, 0, dayCounter).Format(DATE_FORMAT)
-                  for k := 0; k < 4; k++ {         
-                 contributeTmp(date)
+                  for k := 0; k < 7; k++ {         
+                    contributeSpecific(date)
                   }
                 }  
                 
             //fmt.Print(letterMatrix)
             dayCounter++
             iterationCounter++
-            fmt.Println("interations: ", iterationCounter)
+            fmt.Println("Interations: ", iterationCounter)
 
         }
     }
-    contributeTmp("-------------------")
+    //contributeSpecific("-------------------")
 
     fmt.Println("Message is: ",enteredMessage)
-    fmt.Println("XXXXXXXX: ",enteredMessage[letterCounter])
+
    // fmt.Println("lette: ", message[letterCounter:])
-    if letterCounter < messageLength - 1 {
+    if letterCounter < messageLength - 1 && letterCounter <= 10 {
         letterCounter++
-        fmt.Println("letterCounter omcrementedd")
     }
-    fmt.Println("letterCounter count: ", letterCounter)
+    //fmt.Println("letterCounter count: ", letterCounter)
+
     if iterationCounter < setLength(messageLength) {
-        // reset the variables to 0 
-        fmt.Println("recursion start")
+
         letterMatrix = ReturnMatrix(enteredMessage[letterCounter:])
         fmt.Print(letterMatrix)
+        
+        //recursion. Call this function if there is another letter to write
         if number != iterationCounter {
-        runNonRandomScript(enteredMessage[letterCounter:], repository, dayCounter)
+        runNonRandomScript(enteredMessage[letterCounter:], dayCounter)
         }
 
     }
-
-    exec.Command("git", "branch", "-M", "main").Run()
-    exec.Command("git", "remote","add", "origin", repository).Run()
-
-    exec.Command("git", "push", "-u", "origin", "main").Run()
-    fmt.Println("Done with nonrand")
 
 }
 
+// one letter takes up 35 squares. So we have a 7x5 matrix. Depending on how many letters we have in the message, thata the number of squares we want to "paint"
 func setLength(messagelength int) int {
 
     switch messagelength {
@@ -284,13 +278,13 @@ func setLength(messagelength int) int {
     case 9:
         return 315
     case 10:
-        return 365
+        return 350
     }
 
     return 365
 }
 
-func contributeTmp (date string) {
+func contributeSpecific (date string) {
 
     file, err := os.OpenFile(FILE_NAME, os.O_APPEND|os.O_RDWR|os.O_CREATE, 0644)
     if err != nil {
@@ -328,6 +322,7 @@ func main() {
     nonrandomFlag := flag.NewFlagSet("nonrandom", flag.ExitOnError)
     repositoryNonRand := nonrandomFlag.String("repository","","Enter a link to an empty non-initialized GitHub repository to which you want to push the generated file. The link can be an SSH (assuming you have an ssh key) or the HTTPS format. (e.g., git@github.com:yourusername/yourrepo.git or https://github.com/yourusername/yourrepo.git) ")
     message := nonrandomFlag.String("message", "hello", "Enter the message you would like to be displayed on the contribution graph. The maximum ammount of characters is 10.")
+    panelStartDate := nonrandomFlag.Int("adjust_date", 0, "Adjust the date difference between the current date and the first date displayed in the GitHub contributions panel. E.g, toda is the 8th of March, but GitHubs panel is still one day behind(7th of March). So you enter -1 to change todays date to the one displayed on the panel.")
 
     if len(os.Args) < 2 {
         fmt.Println("expected 'foo' or 'bar' subcommands")
@@ -344,23 +339,18 @@ func main() {
         fmt.Println("  time period (months):", *timePeriod)
         fmt.Println("  frequency of commits is:", *frequency, " % of the year")
         //fmt.Println("  random values you entered that are up to no good:", randomFlag.Args())
-        runScript(*repository, *timePeriod, *commitLimmit, *frequency)
+        runScript(*repository, *timePeriod, *commitLimmit, *frequency, *message, *panelStartDate, true)
    
     case "nonrandom":
         nonrandomFlag.Parse(os.Args[2:])
-        fmt.Println("subcommand 'bar'")
-        fmt.Println("  message:", message)
+        fmt.Println("subcommand 'nonrandom'")
+        fmt.Println("  message:", *message)
         fmt.Println("  repository:", *repositoryNonRand)
+        fmt.Println("  start date:", *panelStartDate)
         fmt.Println("  tail:", nonrandomFlag.Args())
 
-        os.MkdirAll("nonrandomContributions", os.ModeDir)
 
-         os.Chdir("nonrandomContributions")
-        os.RemoveAll(".git")
-        os.RemoveAll("data.txt")
-        exec.Command("git", "init").Run()
-
-        runNonRandomScript(*message, *repositoryNonRand, 0)
+        runScript(*repositoryNonRand, *timePeriod, *commitLimmit, *frequency, *message, *panelStartDate, false)
 
     default:
         fmt.Println("Expected 'random' or 'nonrandom' subcommands!\n")
