@@ -275,11 +275,8 @@ var alphabet = map[string][][]int{
 
 func ReturnMatrix(message string) [][]int {
 
-
 	fmt.Println("")
-
-
-	fmt.Println("length ",len(alphabet))
+	//fmt.Println("length ",len(alphabet))
 
 	for i := 0; i < len(alphabet); i++ {
 		_, found := alphabet[string(message[i])]    
@@ -287,13 +284,10 @@ func ReturnMatrix(message string) [][]int {
 		if found {
 			//fmt.Println(m3[string(alphabet1[i])])
 			fmt.Println(string(message[i]))
-			fmt.Println(found)
+			//fmt.Println(found)
 			return alphabet[string(message[i])]
-	
 		}
-		fmt.Println(found)
 	}
     
-
 	return nil
 }

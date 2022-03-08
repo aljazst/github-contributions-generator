@@ -188,40 +188,43 @@ var bMatrix = [][]int{   {0,1,0,0,0},
 var letterMatrix [][]int 
 var number int = 0
 var iterationCounter int = 0
-var lol9 int = 0
-func runNonRandomScript(message string, dayCounter int) {
+var letterCounter int = 0
+var enteredMessage string 
+func runNonRandomScript(message, repository string, dayCounter int) {
    /* os.MkdirAll("nonrandomContributions", os.ModeDir)
 
     of := os.Chdir("nonrandomContributions")
     os.RemoveAll(".git")
     os.RemoveAll("data.txt")
     exec.Command("git", "init").Run()
+    */
 
+    //now this is an ugly hack. Because the flag returns a pointer of the message the slice operations in this function change the value of the message. So we save the original value of the message and use it.
+    if letterCounter == 0 {
+        enteredMessage = message
+    }
     
-    if of != nil {
-        log.Fatal(of)
-    }*/
-    message = "///abcd"
     number++
-    messageLength := len(message)
-    fmt.Print("Message length ",messageLength)
-    fmt.Print("Message  ",message)
+    messageLength := len(enteredMessage)
+    fmt.Println("Message length ",messageLength)
+    fmt.Println("Message is: ",enteredMessage)
    //TODO flag to enter what date is in the corner!
     //dayCounter := -1
     
     var date string
     currentTime := time.Now()
     if iterationCounter < 1 {
-        letterMatrix = ReturnMatrix(message)
+        letterMatrix = ReturnMatrix(enteredMessage)
     }
     for i := 0; i < COLUMNS; i++ {
         for j := 0; j < ROWS; j++ {
             //fmt.Println("inside loop")
             if letterMatrix[j][i] == 1{
                  date = currentTime.AddDate(-1, 0, dayCounter).Format(DATE_FORMAT)
-                           
+                  for k := 0; k < 4; k++ {         
                  contributeTmp(date)
-                }   
+                  }
+                }  
                 
             //fmt.Print(letterMatrix)
             dayCounter++
@@ -230,36 +233,61 @@ func runNonRandomScript(message string, dayCounter int) {
 
         }
     }
-    fmt.Print("lette: ", message[1:])
-    lol9++
-    if iterationCounter <= 300 {
+    contributeTmp("-------------------")
+
+    fmt.Println("Message is: ",enteredMessage)
+    fmt.Println("XXXXXXXX: ",enteredMessage[letterCounter])
+   // fmt.Println("lette: ", message[letterCounter:])
+    if letterCounter < messageLength - 1 {
+        letterCounter++
+        fmt.Println("letterCounter omcrementedd")
+    }
+    fmt.Println("letterCounter count: ", letterCounter)
+    if iterationCounter < setLength(messageLength) {
         // reset the variables to 0 
-        fmt.Println("sisdsds")
-        letterMatrix = ReturnMatrix(message[lol9:])
+        fmt.Println("recursion start")
+        letterMatrix = ReturnMatrix(enteredMessage[letterCounter:])
         fmt.Print(letterMatrix)
         if number != iterationCounter {
-       // runNonRandomScript(message[1:], dayCounter)
+        runNonRandomScript(enteredMessage[letterCounter:], repository, dayCounter)
         }
-        
-        //bMatrix = assignMatrix(message)
-        //recursive, call this function again
 
     }
 
+    exec.Command("git", "branch", "-M", "main").Run()
+    exec.Command("git", "remote","add", "origin", repository).Run()
+
+    exec.Command("git", "push", "-u", "origin", "main").Run()
+    fmt.Println("Done with nonrand")
 
 }
 
-func assignMatrix(message string) [][]int {
+func setLength(messagelength int) int {
 
-    var charOfAlphabet = make([][]int, 2)
-
-    for i := 0; i < len(message); i++ {
-
-   // make a map of alphabeet so you can search for the letter
-    charOfAlphabet = bMatrix
+    switch messagelength {
+    case 1:
+        return 35
+    case 2:
+        return 70
+    case 3:
+        return 105
+    case 4:
+        return 140
+    case 5:
+        return 175
+    case 6:
+        return 210
+    case 7:
+        return 245
+    case 8:
+        return 280
+    case 9:
+        return 315
+    case 10:
+        return 365
     }
 
-    return charOfAlphabet
+    return 365
 }
 
 func contributeTmp (date string) {
@@ -279,6 +307,10 @@ func contributeTmp (date string) {
     //https://pkg.go.dev/os#File.Sync just in case we flush.
     file.Sync()
 
+    exec.Command("git", "add", ".").Run()
+    exec.Command("git", "commit", "-m", "Commit date was: "+ date, "--date", date).Run()
+
+
 }
 
 func main() {
@@ -291,7 +323,10 @@ func main() {
     timePeriod := randomFlag.String("month","1-12", "Contribute only in a specific period. If you enter 3-5, you will only commit from march(starting the same day of month as today) to may. Entering only one number like 8(october) will prompt the script to commit only on the specified month.")
 
 
+    
+    
     nonrandomFlag := flag.NewFlagSet("nonrandom", flag.ExitOnError)
+    repositoryNonRand := nonrandomFlag.String("repository","","Enter a link to an empty non-initialized GitHub repository to which you want to push the generated file. The link can be an SSH (assuming you have an ssh key) or the HTTPS format. (e.g., git@github.com:yourusername/yourrepo.git or https://github.com/yourusername/yourrepo.git) ")
     message := nonrandomFlag.String("message", "hello", "Enter the message you would like to be displayed on the contribution graph. The maximum ammount of characters is 10.")
 
     if len(os.Args) < 2 {
@@ -314,7 +349,8 @@ func main() {
     case "nonrandom":
         nonrandomFlag.Parse(os.Args[2:])
         fmt.Println("subcommand 'bar'")
-        fmt.Println("  message:", *message)
+        fmt.Println("  message:", message)
+        fmt.Println("  repository:", *repositoryNonRand)
         fmt.Println("  tail:", nonrandomFlag.Args())
 
         os.MkdirAll("nonrandomContributions", os.ModeDir)
@@ -324,7 +360,7 @@ func main() {
         os.RemoveAll("data.txt")
         exec.Command("git", "init").Run()
 
-        runNonRandomScript(*message, -1)
+        runNonRandomScript(*message, *repositoryNonRand, 0)
 
     default:
         fmt.Println("Expected 'random' or 'nonrandom' subcommands!\n")
