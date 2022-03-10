@@ -1,26 +1,9 @@
 package main
 
+//import "fmt"
 
 
-import "fmt"
-
-var lol map[string][][]int              // nil map of string-int pairs
-
-//m1 := make(map[string]float64)      // Empty map of string-float64 pairs
-//m2 := make(map[string]float64, 100) // Preallocate room for 100 entries
-
-/*
-
-m3 := map[string]float64{           // Map literal
-    "e":  2.71828,
-    "pi": 3.1416,
-}
-fmt.Println(len(m3))  
-
-*/
-
-var alphabet1 string= "abcdefghijklmnopurstuvwxyz"
-
+// start of lower case letters
 var a = [][]int{   {0,0,0,0,0}, 
 {0,0,1,1,0}, 
 {0,0,0,0,1},
@@ -243,6 +226,68 @@ var z = [][]int{    {0,0,0,0,0},
 {0,1,0,0,0}, 
 {0,1,1,1,1}, 
 {0,0,0,0,0}}
+// end of lower case letters
+
+//start of upper case letters
+
+var H = [][]int{    {1,0,0,0,1}, 
+{1,0,0,0,1}, 
+{1,0,0,0,1},
+{1,1,1,1,1}, 
+{1,0,0,0,1}, 
+{1,0,0,0,1}, 
+{0,0,0,0,0}}
+
+var W = [][]int{    {1,0,0,0,1}, 
+					{1,0,0,0,1}, 
+					{1,0,0,0,1},
+					{1,0,0,0,1}, 
+					{1,0,1,0,1}, 
+					{1,0,1,0,1}, 
+					{0,1,0,1,0}}
+
+//end of upper case letters
+
+//start of symbols
+var space = [][]int{    {0,0,0,0,0}, 
+{0,0,0,0,0}, 
+{0,0,0,0,0},
+{0,0,0,0,0}, 
+{0,0,0,0,0}, 
+{0,0,0,0,0}, 
+{0,0,0,0,0}}
+
+var questionmark = [][]int{    {0,1,1,1,0}, 
+{1,0,0,0,1}, 
+{0,0,0,0,1},
+{0,0,0,1,0}, 
+{0,0,1,0,0}, 
+{0,0,0,0,0}, 
+{0,0,1,0,0}}
+
+var exclamationmark = [][]int{    {0,0,1,0,0}, 
+{0,0,1,0,0}, 
+{0,0,1,0,0},
+{0,0,1,0,0}, 
+{0,0,1,0,0}, 
+{0,0,0,0,0}, 
+{0,0,1,0,0}}
+
+var dash = [][]int{    {0,0,0,0,0}, 
+{0,0,0,0,0}, 
+{0,0,0,0,0},
+{0,1,1,1,1}, 
+{0,0,0,0,0}, 
+{0,0,0,0,0}, 
+{0,0,0,0,0}}
+
+var greaterThan = [][]int{    {0,0,0,0,0}, 
+{0,1,0,0,0}, 
+{0,0,1,0,0},
+{0,0,0,1,0}, 
+{0,0,1,0,0}, 
+{0,1,0,0,0}, 
+{0,0,0,0,0}}
 
 var alphabet = map[string][][]int{ 
 	"a":  a,
@@ -271,23 +316,27 @@ var alphabet = map[string][][]int{
 	"x": x,
 	"y": y,
 	"z": z,
+
+	"H": H,
+	"W": W,
+	" ": space,
+	"?": questionmark,
+	"!": exclamationmark,
+	"-": dash,
+	">": greaterThan,
+	
 }
 
 func ReturnMatrix(message string) [][]int {
-
-	fmt.Println("")
-	//fmt.Println("length ",len(alphabet))
 
 	for i := 0; i < len(alphabet); i++ {
 		_, found := alphabet[string(message[i])]    
 		//fmt.Println(string(message[i]))
 		if found {
-			//fmt.Println(m3[string(alphabet1[i])])
-			fmt.Println(string(message[i]))
-			//fmt.Println(found)
+			//fmt.Println(string(message[i]))
 			return alphabet[string(message[i])]
 		}
 	}
     
-	return nil
+	return questionmark
 }
