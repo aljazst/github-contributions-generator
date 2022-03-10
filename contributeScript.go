@@ -20,6 +20,8 @@ const DATE_FORMAT string = "2006-01-02 15:04:05"
 const ROWS int = 7
 const COLUMNS int = 5
 
+var MESSAGE_OPACITY int = 2 // default contribution in the letter. 2x per day
+
 func writeErrorMessage(err error) {
     if err != nil {
         log.Println("There has been an error: ",err)
@@ -68,10 +70,10 @@ func generateDate(commit_limit, frequency int, time_period [2]int) {
                 date = currentTime.AddDate(-1,time_period[0],i).Format(DATE_FORMAT)
                 n++
                 contribute(date)
+
             }
         }
     }
-
 }
 func Date(year, month, day int) time.Time {
     return time.Date(year, time.Month(month), day, 0, 0, 0, 0, time.UTC)
@@ -138,11 +140,11 @@ func contributins_specific_months(specified_months string) [2]int {
        fmt.Println("Number of days with possible commits:", months[1]) 
     }
 
-    fmt.Println("the functions contribute_specific_months_returned: ", months)
+    //fmt.Println("the functions contribute_specific_months_returned: ", months)
     return months
 }
 
-func runScript(repository, timePeriod string, commit_limit, frequency int, message string, dayCounter int, isRandom bool) {
+func runScript(repository, timePeriod string, commit_limit, frequency int, message, backgroundSaturation string, dayCounter int, isRandom bool) {
 
     // TODO: error handling of the os commands
     if isRandom {
@@ -164,11 +166,19 @@ func runScript(repository, timePeriod string, commit_limit, frequency int, messa
     }
 
 
+
     if repository != ""{
         if isRandom {
             generateDate(contributionsPerDay(commit_limit), frequency, contributins_specific_months(timePeriod))
         } else {
+
+            if backgroundSaturation != "not_defined" {
+
+                generateDate(setSaturation(backgroundSaturation))
+            }
+
             runNonRandomScript(message, dayCounter)
+
         }
 
         //TODO: error handling of the git commands -> https://pkg.go.dev/os/exec#Command
@@ -182,13 +192,31 @@ func runScript(repository, timePeriod string, commit_limit, frequency int, messa
     }
     
 
-
-    fmt.Println("I'm done in general!")
-    
-
+    fmt.Println("")
+    fmt.Println("We are done here! It may take some time for GitHub to display the changes. It depends on how many commits we have made.")
+    fmt.Println("")
 
 }
 
+func setSaturation(saturationLevel string) (commit_level int, freq int, months [2]int) {
+
+    if saturationLevel == "low" || saturationLevel == "Low" {
+        MESSAGE_OPACITY = 5
+        return 2, 100, [2]int {0,365}
+    } else if saturationLevel == "medium" || saturationLevel == "Medium" {
+        MESSAGE_OPACITY = 9
+        return 4, 100, [2]int {0,365}
+    } else if saturationLevel == "high" || saturationLevel == "High" {
+        MESSAGE_OPACITY = 15
+        return 7, 100, [2]int {0,365}
+    } /*else if saturationLevel == "none" || saturationLevel == "None" {
+        MESSAGE_OPACITY = 15
+        return 0, 0, [2]int {1,12}
+    } */
+
+    //the low option will be the default
+    return 2, 100, [2]int {1,12}
+}
 
 var letterMatrix [][]int 
 var number int = 0
@@ -216,30 +244,24 @@ func runNonRandomScript(message string, dayCounter int) {
     }
     for i := 0; i < COLUMNS; i++ {
         for j := 0; j < ROWS; j++ {
-            //fmt.Println("inside loop")
-            if letterMatrix[j][i] == 1{
+   
+            if letterMatrix[j][i] == 1 {
                  date = currentTime.AddDate(-1, 0, dayCounter).Format(DATE_FORMAT)
-                  for k := 0; k < 7; k++ {         
+                  for k := 0; k < MESSAGE_OPACITY; k++ {         
                     contributeSpecific(date)
                   }
                 }  
                 
-            //fmt.Print(letterMatrix)
             dayCounter++
             iterationCounter++
-            fmt.Println("Interations: ", iterationCounter)
+            fmt.Println("Iteration: ", iterationCounter, "/", setLength(messageLength))
 
         }
     }
-    //contributeSpecific("-------------------")
 
-    fmt.Println("Message is: ",enteredMessage)
-
-   // fmt.Println("lette: ", message[letterCounter:])
     if letterCounter < messageLength - 1 && letterCounter <= 10 {
         letterCounter++
     }
-    //fmt.Println("letterCounter count: ", letterCounter)
 
     if iterationCounter < setLength(messageLength) {
 
@@ -323,9 +345,10 @@ func main() {
     repositoryNonRand := nonrandomFlag.String("repository","","Enter a link to an empty non-initialized GitHub repository to which you want to push the generated file. The link can be an SSH (assuming you have an ssh key) or the HTTPS format. (e.g., git@github.com:yourusername/yourrepo.git or https://github.com/yourusername/yourrepo.git) ")
     message := nonrandomFlag.String("message", "hello", "Enter the message you would like to be displayed on the contribution graph. The maximum ammount of characters is 10.")
     panelStartDate := nonrandomFlag.Int("adjust_date", 0, "Adjust the date difference between the current date and the first date displayed in the GitHub contributions panel. E.g, toda is the 8th of March, but GitHubs panel is still one day behind(7th of March). So you enter -1 to change todays date to the one displayed on the panel.")
-
+    backgroundSaturation := nonrandomFlag.String("saturation", "not_defined", "The ammount of background saturation. Options are: low, medium and high. You should choose the option on behalf of your current contributions panel. If you have very little contributions choose the low option. If you have been very active, you will need to choose high in order for the text to be readable/visible. If you don't define the saturation, it won't be set. ")
+   
     if len(os.Args) < 2 {
-        fmt.Println("expected 'foo' or 'bar' subcommands")
+        fmt.Println("expected 'random' or 'nonrandom' subcommands")
         os.Exit(1)
     }
 
@@ -339,7 +362,7 @@ func main() {
         fmt.Println("  time period (months):", *timePeriod)
         fmt.Println("  frequency of commits is:", *frequency, " % of the year")
         //fmt.Println("  random values you entered that are up to no good:", randomFlag.Args())
-        runScript(*repository, *timePeriod, *commitLimmit, *frequency, *message, *panelStartDate, true)
+        runScript(*repository, *timePeriod, *commitLimmit, *frequency, *message, *backgroundSaturation ,*panelStartDate, true)
    
     case "nonrandom":
         nonrandomFlag.Parse(os.Args[2:])
@@ -347,10 +370,10 @@ func main() {
         fmt.Println("  message:", *message)
         fmt.Println("  repository:", *repositoryNonRand)
         fmt.Println("  start date:", *panelStartDate)
-        fmt.Println("  tail:", nonrandomFlag.Args())
+        fmt.Println("  background saturation:", *backgroundSaturation)
+        //fmt.Println("  tail:", nonrandomFlag.Args())
 
-
-        runScript(*repositoryNonRand, *timePeriod, *commitLimmit, *frequency, *message, *panelStartDate, false)
+        runScript(*repositoryNonRand, *timePeriod, *commitLimmit, *frequency, *message, *backgroundSaturation, *panelStartDate, false)
 
     default:
         fmt.Println("Expected 'random' or 'nonrandom' subcommands!\n")
