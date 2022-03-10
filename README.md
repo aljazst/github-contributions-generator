@@ -32,10 +32,11 @@ If you want to display a message, you will have to check if the current date and
 
 ![dateExxample](https://user-images.githubusercontent.com/76880102/157712749-0ab75ee0-01bf-4203-bc2d-979649414032.png)
 
-In the example above we see that there is a 3 day difference between todays date and the first GitHub date. So we have to let the script know that It has to start 3 days earlier. So we use the -adjust_date=-3 flag. 
+In the example above we see that there is a 3 day difference between todays date and the first GitHub date. So we have to let the script know that it has to start 3 days earlier. So we use the -adjust_date=-3 flag. 
 
 If you don't pay attention to this, the script will start contributing exactly 1 year ago from today, and this will happen:
 ![no_date_adjustment_example](https://user-images.githubusercontent.com/76880102/157713381-e4212f30-3826-4181-9f8c-6ba2cd7cdf5e.PNG)
+
 
 ### The saturation parameter (filling the background when displaying a message)
 If you don't specify a background saturation level, the script will just write the message with no background. That can be a problem if you have commits from before as the squares will "collide" with the letters and make them unreadable. 
@@ -50,6 +51,14 @@ It all depends on your GitHub contributions graph.
 If you have been very active, and made a lot of commits you will have to use the high option, you will fill out the backround to a level that will make your message readable. 
 
 If you don't have a lot of commits you can go with the low or medium option. Take in to account that the high saturation option takes the most time to complete.
+
+This is an example of a medium saturated background:
+![barcelona_github](https://user-images.githubusercontent.com/76880102/157718345-0f90bf2b-88e8-4730-bc0d-23563df2205a.PNG)
+
+## How it works
+Each letter/symbol/number is displayed in a 7x5 matrix. The GitHub contributions panel has space for 10 of those matrices.  
+If you want to use a specific letter/symbol/number in your github message, you will have to check in the charMatrix.go folder and see if's already defined. Currently there are a few symbols and all the lower case letter. But don't worry. You can define other letters/numbers/symbols. Just define your symbol in a new matrix and add it to the alphabet variable. I've used this font to draw the letters: 
+![pixel_fonts](https://user-images.githubusercontent.com/76880102/157720191-8197c37b-8f53-49c5-be57-78ab4ec8ddd2.jpg)
 
 
 ## How to run the random option
