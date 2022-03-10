@@ -19,7 +19,7 @@ This script is written in Go, so you will need it. And ofcourse you will need gi
 
 ## How to run the nonrandom option (displaying a message)
 1. Create an fully empty GitHub repository (not even a README). Do not initialize it.
-2. For the basic option (contribute the entire year), you run the command:
+2. Example of a command:
 ```sh
 go run . nonrandom -message="HelloWorld" -repository="https://github.com/yourUserName/yourRepo.git" -adjust_date=-3 -saturation=medium
 ```
