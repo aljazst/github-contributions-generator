@@ -109,6 +109,8 @@ You can also make different combinations. Just make another repository and run a
 
 You can do a lot of custom "stuff" here. You can run the random and the nonrandom option seperately to get more specific results. All you need to do it make a new repository on GitHub for each time you run the script. E.g, You run the random command with specific instructions and then just make another repository and run another version of the script there. 
 
+If you dont like a specific result, you can just delete the repository and the commits will be removed.
+
 ## Having problems? 
 Keep in mind that it can take GitHub several minutes to update the changes. Still no luck?
 
