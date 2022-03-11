@@ -1,6 +1,7 @@
 # GitHub contributions generator
 
 A script written in Go, which goal is to make your GitHub contributions graph the way you want it to be.
+:shipit: The goal of this was to improve my Go skills and to have some fun! Enjoy! :beers:
 
 ## What's the goal? 
 Let't transform this 
