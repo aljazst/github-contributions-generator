@@ -14,6 +14,7 @@ to something more interesting
 ## Disclaimer
 This script was written for fun. In no way is it meant to "cheat". Nobody should judge a programmer regarding to his GitHub contributions graph.
 It's still not perfect. If you will use the nonrandom (message) option, there can be some distorted letters.
+**The creation of the directory part is implemented for Windows OS. If you use linux, check out the branch named patch-1.**
 
 ### System requirements
 This script is written in Go, so you will need it. And ofcourse you will need git. 
