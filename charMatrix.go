@@ -329,7 +329,7 @@ var alphabet = map[string][][]int{
 
 func ReturnMatrix(message string) [][]int {
 
-	for i := 0; i < len(alphabet); i++ {
+	for i := 0; i < len(message); i++ {
 		_, found := alphabet[string(message[i])]    
 		//fmt.Println(string(message[i]))
 		if found {
